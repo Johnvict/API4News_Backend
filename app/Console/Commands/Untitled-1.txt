@@ -1,0 +1,241 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use App\Newsdata;
+use App\Old\Oldnewsdata;
+use App\Old\Oldbusiness;
+use App\Old\Oldentertainment;
+use App\Old\Oldhealth;
+use App\Old\Oldscience;
+use App\Old\Oldsport;
+use App\Old\Oldtechnology;
+
+
+class ArrangeNews extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'news:arrange';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'This command will sort the news in our database at scheduled time to avoid old news in circulation';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        $this->info("Yeah, I'm doing it");
+        $this->info("\n\n\t\rNews Sorting in PROGRESS");
+
+        $this->sortAllNews();
+
+    }
+
+    private function sortAllNews()
+    {
+        $now =Carbon::now()->subDays(1)->toDateTimeString();
+        DB::table('newsdatas')->orderBy('id')->where('created_at', '<=', $now)->chunk(5, function ($newses) {
+            foreach ($newses as $news) {
+                $this->info($news->id);
+                $newsData = new Oldnewsdata();
+                $newsData->country_id = $news->country_id;
+                $newsData->source = $news->source;
+                $newsData->author = $news->author;
+                $newsData->title = $news->title;
+                $newsData->url = $news->url;
+                $newsData->urlToImage = $news->urlToImage;
+                $newsData->publishedAt = $news->publishedAt;
+                $newsData->description = $news->description;
+                $newsData->content = $news->content;
+                if ($newsData->save()) {
+                    DB::table('newsdatas')->delete($news->id);
+                }
+            }
+            $this->info('Next chunk All News');
+        });
+        
+        $this->sortBusinessNews();
+    }
+
+    private function sortBusinessNews()
+    {
+        $now =Carbon::now()->subDays(1)->toDateTimeString();
+        DB::table('businesses')->orderBy('id')->where('created_at', '<=', $now)->chunk(5, function ($newses) {
+            foreach ($newses as $news) {
+                $this->info($news->id);
+                $newsData = new Oldbusiness();
+                $newsData->country_id = $news->country_id;
+                $newsData->source = $news->source;
+                $newsData->author = $news->author;
+                $newsData->title = $news->title;
+                $newsData->url = $news->url;
+                $newsData->urlToImage = $news->urlToImage;
+                $newsData->publishedAt = $news->publishedAt;
+                $newsData->description = $news->description;
+                $newsData->content = $news->content;
+                if ($newsData->save()) {
+                    DB::table('businesses')->delete($news->id);
+                }
+            }
+            $this->info('Next chunk Business news');
+        });
+        
+        $this->sortEntertainmentNews();
+    }
+
+    private function sortEntertainmentNews()
+    {
+        $now =Carbon::now()->subDays(1)->toDateTimeString();
+        DB::table('entertainments')->orderBy('id')->where('created_at', '<=', $now)->chunk(5, function ($newses) {
+            foreach ($newses as $news) {
+                $this->info($news->id);
+                $newsData = new Oldentertainment();
+                $newsData->country_id = $news->country_id;
+                $newsData->source = $news->source;
+                $newsData->author = $news->author;
+                $newsData->title = $news->title;
+                $newsData->url = $news->url;
+                $newsData->urlToImage = $news->urlToImage;
+                $newsData->publishedAt = $news->publishedAt;
+                $newsData->description = $news->description;
+                $newsData->content = $news->content;
+                if ($newsData->save()) {
+                    $this->info($news->id .': Deleted');
+                    DB::table('entertainments')->delete($news->id);
+                }
+            }
+            $this->info('Next chunk Entertainment news');
+        });
+        
+        $this->sortHealthNews();
+    }
+
+    private function sortHealthNews()
+    {
+        $now =Carbon::now()->subDays(1)->toDateTimeString();
+        DB::table('healths')->orderBy('id')->where('created_at', '<=', $now)->chunk(5, function ($newses) {
+            foreach ($newses as $news) {
+                $this->info($news->id);
+                $newsData = new Oldhealth();
+                $newsData->country_id = $news->country_id;
+                $newsData->source = $news->source;
+                $newsData->author = $news->author;
+                $newsData->title = $news->title;
+                $newsData->url = $news->url;
+                $newsData->urlToImage = $news->urlToImage;
+                $newsData->publishedAt = $news->publishedAt;
+                $newsData->description = $news->description;
+                $newsData->content = $news->content;
+                if ($newsData->save()) {
+                    DB::table('healths')->delete($news->id);
+                }
+            }
+            $this->info('Next chunk Health news');
+        });
+        
+        $this->sortScienceNews();
+    }
+
+    private function sortScienceNews()
+    {
+        $now =Carbon::now()->subDays(1)->toDateTimeString();
+        DB::table('sciences')->orderBy('id')->where('created_at', '<=', $now)->chunk(5, function ($newses) {
+            foreach ($newses as $news) {
+                $this->info($news->id);
+                $newsData = new Oldscience();
+                $newsData->country_id = $news->country_id;
+                $newsData->source = $news->source;
+                $newsData->author = $news->author;
+                $newsData->title = $news->title;
+                $newsData->url = $news->url;
+                $newsData->urlToImage = $news->urlToImage;
+                $newsData->publishedAt = $news->publishedAt;
+                $newsData->description = $news->description;
+                $newsData->content = $news->content;
+                if ($newsData->save()) {
+                    DB::table('sciences')->delete($news->id);
+                }
+            }
+            $this->info('Next chunk Science news');
+        });
+        
+        $this->sortSportsNews();
+    }
+
+    private function sortSportsNews()
+    {
+        $now =Carbon::now()->subDays(1)->toDateTimeString();
+        DB::table('sports')->orderBy('id')->where('created_at', '<=', $now)->chunk(5, function ($newses) {
+            foreach ($newses as $news) {
+                $this->info($news->id);
+                $newsData = new Oldsport();
+                $newsData->country_id = $news->country_id;
+                $newsData->source = $news->source;
+                $newsData->author = $news->author;
+                $newsData->title = $news->title;
+                $newsData->url = $news->url;
+                $newsData->urlToImage = $news->urlToImage;
+                $newsData->publishedAt = $news->publishedAt;
+                $newsData->description = $news->description;
+                $newsData->content = $news->content;
+                if ($newsData->save()) {
+                    DB::table('sports')->delete($news->id);
+                }
+            }
+            $this->info('Next chunk Sports News');
+        });
+        
+        $this->sortTechnologyNews();
+    }
+    private function sortTechnologyNews()
+    {
+        $now =Carbon::now()->subDays(1)->toDateTimeString();
+        DB::table('technologies')->orderBy('id')->where('created_at', '<=', $now)->chunk(5, function ($newses) {
+            foreach ($newses as $news) {
+                $this->info($news->id);
+                $newsData = new Oldtechnology();
+                $newsData->country_id = $news->country_id;
+                $newsData->source = $news->source;
+                $newsData->author = $news->author;
+                $newsData->title = $news->title;
+                $newsData->url = $news->url;
+                $newsData->urlToImage = $news->urlToImage;
+                $newsData->publishedAt = $news->publishedAt;
+                $newsData->description = $news->description;
+                $newsData->content = $news->content;
+                if ($newsData->save()) {
+                    $this->info($news->id .': Deleted');
+                    DB::table('technologies')->delete($news->id);
+                }
+            }
+            $this->info('Next chunk Technology News');
+        });
+
+        $this->info('All news sorted COMPLETELY');
+    }
+
+}
